@@ -123,12 +123,11 @@
                             <p>Chưa có luồng nào đang chạy.</p>
                         </div>
                     <% } else if (locals.pendingTask) { %>
+                        <!-- TRƯỜNG HỢP 1: CÓ TASK CHỜ DUYỆT (HIỆN FORM) -->
                         <div class="animate-fade-in">
                             <div class="mb-5 bg-amber-50 border border-amber-200 p-4 rounded-xl text-amber-800 text-sm shadow-sm flex items-start gap-3">
-                                <svg class="w-5 h-5 text-amber-500 mt-0.5 shrink-0" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                <svg class="w-5 h-5 text-amber-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                                 <div>
                                     <span class="block text-xs uppercase tracking-wider text-amber-600/80 mb-0.5">Đang chờ thao tác</span>
@@ -158,26 +157,45 @@
                                 </button>
                             </form>
                         </div>
+                    <% } else if (locals.workflowExe && workflowExe.status === 'RUNNING') { %>
+                        <!-- TRƯỜNG HỢP 2: WORKFLOW ĐANG RUNNING NHƯNG ĐANG CHẠY TASK HTTP (TỰ ĐỘNG RELOAD) -->
+                        <div class="text-center py-8 text-slate-500 animate-fade-in">
+                            <div class="inline-flex p-3 bg-blue-50 text-blue-600 rounded-full mb-3">
+                                <svg class="w-8 h-8 animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </div>
+                            <p class="font-bold text-slate-700 text-base">Hệ thống đang tự động xử lý...</p>
+                            <p class="text-xs text-slate-400 mt-1">Đang thực thi Task hệ thống (HTTP/Webhook). Form duyệt sẽ xuất hiện ngay.</p>
+                            <button onclick="window.location.reload()" class="mt-4 text-xs bg-blue-50 hover:bg-blue-100 text-blue-600 font-semibold py-2 px-5 rounded-full transition-colors border border-blue-200 cursor-pointer">
+                                ↻ Tải lại ngay
+                            </button>
+                            <script>
+                                setTimeout(() => { window.location.reload(); }, 2500);
+                            </script>
+                        </div>
                     <% } else { %>
+                        <!-- TRƯỜNG HỢP 3: WORKFLOW ĐÃ HOÀN THÀNH -->
                         <div class="text-center py-6 text-slate-400">
-                            <svg class="w-12 h-12 mx-auto mb-2 text-emerald-400" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            <svg class="w-12 h-12 mx-auto mb-2 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
-                            <p class="font-bold text-slate-600 text-base">Tất cả Task đã hoàn thành!</p>
+                            <p class="font-bold text-slate-600 text-base">Toàn bộ Workflow đã hoàn thành!</p>
                             <button onclick="window.location.reload()"
                                 class="mt-4 text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium py-1.5 px-4 rounded-full transition-colors border border-slate-200 cursor-pointer">Tải lại trang</button>
                         </div>
                     <% } %>
                 </div>
 
-                <!-- 2. Khu vực Audit Log & Notification History (Mới) -->
+                <!-- 2. Khu vực Audit Log & Notification History -->
                 <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex-1 flex flex-col">
                     <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
                         <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
                             <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
+                                </path>
                             </svg>
                             Nhật ký Webhook & Audit Trail
                         </h2>
@@ -190,27 +208,25 @@
                         <% if (!locals.webhookLogs || webhookLogs.length === 0) { %>
                             <div class="text-center py-8 text-slate-400">
                                 <svg class="w-10 h-10 mx-auto mb-2 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
+                                    </path>
                                 </svg>
                                 <p class="text-xs italic">Chưa ghi nhận sự kiện Webhook nào.</p>
                             </div>
                         <% } else { %>
-                            <% webhookLogs.forEach((log, index) => { %>
-                                <% 
-                                    const payload = log.payload || {};
-                                    const exec = log.orkesExecution;
-                                    const status = payload.workflowStatus || (exec ? exec.status : 'RECEIVED');
-                                    const msg = payload.message || null;
-                                    const wfId = payload.workflowId || (exec ? exec.workflowId : null);
-                                    
-                                    // Gom tất cả Workflow Output từ exec hoặc payload
-                                    const rawOutput = exec?.workflowOutput || payload.workflowOutput || {};
-                                    const hasOutput = rawOutput && typeof rawOutput === 'object' && Object.keys(rawOutput).length > 0;
-                                    
-                                    const dateStr = log.receivedAt ? new Date(log.receivedAt).toLocaleTimeString('vi-VN') + ' - ' + new Date(log.receivedAt).toLocaleDateString('vi-VN') : 'N/A';
-                                %>
+                            <% webhookLogs.forEach((log, index) => { 
+                                const payload = log.payload || {}; 
+                                const exec = log.orkesExecution; 
+                                const status = payload.workflowStatus || (exec ? exec.status : 'RECEIVED');
+                                const msg = payload.message || null; 
+                                const wfId = payload.workflowId || (exec ? exec.workflowId : null); 
+                                const rawOutput = exec?.workflowOutput || payload.workflowOutput || {}; 
+                                const hasOutput = rawOutput && typeof rawOutput === 'object' && Object.keys(rawOutput).length > 0;
+                                const dateStr = log.receivedAt ? new Date(log.receivedAt).toLocaleTimeString('vi-VN') + ' - ' + new Date(log.receivedAt).toLocaleDateString('vi-VN') : 'N/A';
+                            %>
                                 <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 hover:border-slate-300 transition-all">
-                                    
+
                                     <!-- Header Event -->
                                     <div class="flex items-center justify-between mb-2">
                                         <div class="flex items-center gap-2">
@@ -388,7 +404,7 @@
                         let safeRefName = cleanString(task.taskReferenceName);
 
                         let cardHtml = `<div style='padding:10px 14px;text-align:left;min-width:210px;max-width:280px;'>`;
-                        
+
                         // Header Card
                         cardHtml += `<div style='font-weight:700;font-size:12px;color:#0f172a;display:flex;align-items:center;justify-content:space-between;gap:8px;'>`;
                         cardHtml += `<span style='overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>${typeIcon}${safeRefName}</span>`;

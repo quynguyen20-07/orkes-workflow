@@ -30,23 +30,38 @@ export const getDashboard = async (req: Request, res: Response) => {
     let pendingTask: any = null;
     let completedTasks: any[] = [];
 
-    // 🌟 PHẦN MỚI: Nếu không có workflowId trên URL, tự động tìm luồng đang chạy
+    // Tự động lấy luồng đang chạy nếu không có workflowId trên URL
     if (!wfId) {
       const runningWfs = await orkesService.getRunningWorkflows(wfName);
       if (runningWfs && runningWfs.length > 0) {
-        wfId = runningWfs[0];  
+        wfId = runningWfs[0];
       }
     }
 
     if (wfId) {
       workflowExe = await orkesService.getWorkflowDetails(wfId);
 
-      pendingTask = workflowExe.tasks?.find(
-        (t: any) =>
-          (t.status === "IN_PROGRESS" || t.status === "SCHEDULED") &&
-          (t.taskType === "SIMPLE" || t.type === "SIMPLE"),
-      );
+      // 🌟 THUẬT TOÁN BẮT TASK CHỜ DUYỆT BẢO ĐẢM 100%
+      pendingTask = workflowExe.tasks?.find((t: any) => {
+        const isPending =
+          t.status === "IN_PROGRESS" || t.status === "SCHEDULED";
+        // Lấy type từ workflowTask hoặc taskType
+        const rawType = (
+          t.workflowTask?.type ||
+          t.taskType ||
+          t.type ||
+          ""
+        ).toUpperCase();
 
+        // Task cần thao tác tay là Task SIMPLE hoặc không phải hệ thống (HTTP, FORK_JOIN, JOIN)
+        const isHumanTask =
+          rawType === "SIMPLE" ||
+          !["HTTP", "FORK_JOIN", "JOIN", "WAIT"].includes(rawType);
+
+        return isPending && isHumanTask;
+      });
+
+      // Lọc các task đã completed
       completedTasks =
         workflowExe.tasks?.filter(
           (t: any) =>
@@ -54,7 +69,6 @@ export const getDashboard = async (req: Request, res: Response) => {
         ) || [];
     }
 
-    // Đọc danh sách log Webhook từ file JSON
     const webhookLogs = getWebhookLogs();
 
     res.render("dashboard", {
@@ -76,6 +90,7 @@ export const startWorkflow = async (req: Request, res: Response) => {
     const wfName = "Performance_Review_Mock_Workflow";
     const runningWfs = await orkesService.getRunningWorkflows(wfName);
 
+    // Hủy các luồng cũ đang chạy dở trước khi tạo luồng mới
     if (runningWfs && runningWfs.length > 0) {
       for (const oldWfId of runningWfs) {
         await orkesService.terminateWorkflow(oldWfId, "Khởi tạo luồng mới");
