@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orkes Control Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .animate-fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 font-sans">
+    <div class="max-w-[1400px] mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        
+        <!-- Topbar -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm mb-6 flex justify-between items-center border border-slate-200 border-t-4 border-t-blue-600">
+            <div>
+                <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Orkes Control Center</h1>
+                <p class="text-sm text-slate-500 mt-1">
+                    <% if (locals.wfId) { %>
+                        Trạng thái: <span class="bg-blue-100 text-blue-700 font-mono px-2 py-0.5 rounded text-xs"><%= wfId %></span>
+                    <% } else { %>
+                        Trạng thái: <span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs">Chưa khởi chạy</span>
+                    <% } %>
+                </p>
+            </div>
+            <form action="/workflow/start" method="POST" class="m-0">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-full shadow-md transition-all transform hover:scale-105 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    KHỞI CHẠY LUỒNG MỚI
+                </button>
+            </form>
+        </div>
+
+        <% if (locals.message) { %>
+            <div class="bg-teal-50 border border-teal-200 text-teal-800 px-4 py-3 rounded-xl mb-6 shadow-sm flex items-center gap-3">
+                <svg class="w-6 h-6 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span><strong>Hệ thống:</strong> <%= message %></span>
+            </div>
+        <% } %>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- BÊN TRÁI: DYNAMIC MERMAID VISUALIZER -->
+            <div class="col-span-12 lg:col-span-7 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="bg-slate-50 h-full p-6 flex flex-col items-center justify-start overflow-y-auto" style="min-height: 750px;">
+                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] mb-6">Dynamic Execution Map</h2>
+                    
+                    <% if (!locals.wfId) { %>
+                        <div class="mt-20 text-center text-slate-400">
+                            <svg class="w-16 h-16 mx-auto mb-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            <p>Hãy khởi chạy luồng để Orkes tải bản đồ động về đây.</p>
+                        </div>
+                    <% } else { %>
+                        <div class="mermaid w-full flex justify-center">
+                            <!-- JS Sẽ vẽ sơ đồ tự động vào đây -->
+                            <div class="animate-pulse text-blue-400 font-bold">Đang phân tích cấu trúc từ Orkes...</div>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- BÊN PHẢI: CONTROL PANEL -->
+            <div class="col-span-12 lg:col-span-5 flex flex-col gap-8">
+                <!-- Khu vực Xử lý -->
+                <div class="bg-white p-7 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-indigo-500"></div>
+                    <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                        <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                        Khu vực Xử lý
+                    </h2>
+                    
+                    <% if (!locals.wfId) { %>
+                        <div class="text-center py-12 text-slate-400">
+                            <p>Chưa có luồng nào đang chạy.</p>
+                        </div>
+                    <% } else if (locals.pendingTask) { %>
+                        <div class="animate-fade-in">
+                            <div class="mb-5 bg-amber-50 border border-amber-200 p-4 rounded-xl text-amber-800 text-sm shadow-sm flex items-start gap-3">
+                                <svg class="w-5 h-5 text-amber-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <div>
+                                    <span class="block text-xs uppercase tracking-wider text-amber-600/80 mb-0.5">Đang chờ thao tác</span>
+                                    <span class="font-bold text-amber-900"><%= pendingTask.referenceTaskName %></span>
+                                </div>
+                            </div>
+                            <form action="/task/complete" method="POST">
+                                <input type="hidden" name="taskId" value="<%= pendingTask.taskId %>">
+                                <input type="hidden" name="workflowInstanceId" value="<%= pendingTask.workflowInstanceId %>">
+                                <div class="mb-4">
+                                    <label class="block text-xs font-bold mb-2 text-slate-500 uppercase tracking-wide">Ý kiến đánh giá:</label>
+                                    <textarea name="comments" rows="3" required class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all resize-none shadow-inner" placeholder="Nhập comment..."></textarea>
+                                </div>
+                                <div class="mb-6">
+                                    <label class="block text-xs font-bold mb-2 text-slate-500 uppercase tracking-wide">Quyết định:</label>
+                                    <select name="decision" class="w-full border border-slate-300 rounded-xl p-3 bg-white text-sm focus:border-blue-500 outline-none font-semibold cursor-pointer shadow-sm">
+                                        <option value="APPROVE" class="text-emerald-600">✅ Đồng ý (Approve)</option>
+                                        <option value="REJECT" class="text-rose-600">❌ Từ chối (Reject)</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="w-full bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl hover:bg-slate-900 shadow-md transition-all">
+                                    Xác nhận Hoàn thành Task
+                                </button>
+                            </form>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center py-10 text-slate-400">
+                            <svg class="w-16 h-16 mx-auto mb-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <p class="font-bold text-slate-600 text-lg">Hoàn thành / Tự động xử lý</p>
+                            <button onclick="window.location.reload()" class="mt-6 text-sm bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium py-2 px-6 rounded-full transition-colors border border-slate-200 shadow-sm">Tải lại trang</button>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nạp toàn bộ cục JSON của Workflow từ backend để JS đọc tự động -->
+    <script type="application/json" id="data-workflow">
+        <%- JSON.stringify(locals.workflow || locals.workflowExe || {}) %>
+    </script>
+    <script type="application/json" id="data-running">
+        <%= locals.wfId ? "true" : "false" %>
+    </script>
+
+    <!-- HÀM VẼ BẢN ĐỒ ORKES TỰ ĐỘNG BẰNG JAVASCRIPT -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+
+        // 1. Lấy dữ liệu từ backend
+        const wfData = JSON.parse(document.getElementById('data-workflow').textContent || '{}');
+        const isRunning = document.getElementById('data-running').textContent.trim() === 'true';
+        
+        const wfDef = wfData.workflowDefinition; // Blueprint gốc từ Orkes
+        const exeTasks = wfData.tasks || [];     // Các task đã chạy thực tế
+
+        function getStatusClass(refName) {
+            if (!isRunning) return 'pending';
+            const task = exeTasks.find(t => t.referenceTaskName === refName);
+            if (!task) return 'pending';
+            if (task.status === 'COMPLETED') return 'completed';
+            if (task.status === 'IN_PROGRESS' || task.status === 'SCHEDULED') return 'inprogress';
+            return 'pending';
+        }
+
+        // 2. Thuật toán phân tích JSON Orkes biến thành mã nguồn Mermaid (TỰ ĐỘNG)
+        function generateMermaidGraph() {
+            if (!wfDef || !wfDef.tasks) return null; // Trả về null nếu không có bản vẽ
+
+            let m = "graph TD\n";
+            m += "classDef completed fill:#f0fdf4,stroke:#10b981,stroke-width:2px,color:#065f46;\n";
+            m += "classDef inprogress fill:#eff6ff,stroke:#3b82f6,stroke-width:3px,color:#1e40af,stroke-dasharray: 5 5;\n";
+            m += "classDef pending fill:#f8fafc,stroke:#e2e8f0,stroke-width:1px,color:#94a3b8;\n";
+            m += "classDef forkjoin fill:#334155,stroke:#334155,stroke-width:2px,color:#fff,rx:4px,ry:4px;\n";
+            m += "classDef startend fill:#fff,stroke:#0ea5e9,stroke-width:3px,rx:30px,ry:30px,color:#0284c7;\n\n";
+            
+            m += "Start((Start)):::startend\n";
+
+            // Đệ quy đọc từng task của Orkes
+            function parseOrkesTasks(tasks, parentIds) {
+                let currentParents = Array.isArray(parentIds) ? parentIds : [parentIds];
+                
+                for (let task of tasks) {
+                    let tId = task.taskReferenceName.replace(/-/g, '_'); 
+                    let status = getStatusClass(task.taskReferenceName);
+                    
+                    if (task.type === 'FORK_JOIN' || task.type === 'FORK_JOIN_DYNAMIC') {
+                        m += `${tId}["⑂ ${task.taskReferenceName} <br/><small>${task.type}</small>"]:::forkjoin\n`;
+                        currentParents.forEach(p => { m += `${p} --> ${tId}\n`; });
+                        
+                        let branchEnds = [];
+                        if (task.forkTasks) {
+                            task.forkTasks.forEach(branch => {
+                                let endOfBranch = parseOrkesTasks(branch, tId);
+                                if (Array.isArray(endOfBranch)) branchEnds.push(...endOfBranch);
+                                else branchEnds.push(endOfBranch);
+                            });
+                        }
+                        currentParents = branchEnds; 
+                    } 
+                    else if (task.type === 'JOIN') {
+                        m += `${tId}["⑂ ${task.taskReferenceName} <br/><small>${task.type}</small>"]:::forkjoin\n`;
+                        currentParents.forEach(p => { m += `${p} --> ${tId}\n`; });
+                        currentParents = [tId];
+                    }
+                    else {
+                        let icon = task.type === 'HTTP' ? '🌐' : '👤';
+                        m += `${tId}["${icon} ${task.taskReferenceName} <br/><small>${task.type}</small>"]:::${status}\n`;
+                        currentParents.forEach(p => { m += `${p} --> ${tId}\n`; });
+                        currentParents = [tId];
+                    }
+                }
+                return currentParents;
+            }
+
+            let finalNodes = parseOrkesTasks(wfDef.tasks, "Start");
+            m += "End((End)):::startend\n";
+            finalNodes.forEach(p => { m += `${p} --> End\n`; });
+
+            return m;
+        }
+
+        // 3. Tiến hành Render bằng Mermaid v11
+        async function renderGraph() {
+            if (!isRunning) return; 
+
+            const container = document.querySelector('.mermaid');
+            const graphString = generateMermaidGraph();
+            
+            if (!graphString) {
+                container.innerHTML = '<p class="text-slate-400">Không tìm thấy định nghĩa Workflow từ API.</p>';
+                return;
+            }
+
+            try {
+                mermaid.initialize({ startOnLoad: false, theme: 'base', flowchart: { htmlLabels: true } });
+                
+                // Hàm render của Mermaid v11 (Không dùng innerHTML nhét bừa)
+                const { svg } = await mermaid.render('orkes-graph', graphString);
+                container.innerHTML = svg;
+            } catch (error) {
+                console.error("Lỗi vẽ Mermaid:", error);
+                container.innerHTML = `<p class="text-red-500 mb-2">Lỗi render sơ đồ.</p><textarea class="w-full text-xs p-2 h-64 border bg-slate-100">` + graphString + `</textarea>`;
+            }
+        }
+
+        renderGraph();
+    </script>
+</body>
+</html>
