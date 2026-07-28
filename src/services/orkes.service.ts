@@ -33,7 +33,6 @@ export class OrkesService {
   async getRunningWorkflows(workflowName: string, version: number = 1) {
     const client = await this.clientPromise;
     try {
-      // API này trả về một mảng chứa các Workflow ID đang ở trạng thái RUNNING
       const runningIds = await client.workflowResource.getRunningWorkflow(
         workflowName,
         version,
@@ -45,14 +44,22 @@ export class OrkesService {
     }
   }
 
-  // 2. Hủy một luồng đang chạy
   async terminateWorkflow(
     workflowId: string,
     reason: string = "Bị hủy bởi luồng mới",
   ) {
     const client = await this.clientPromise;
-    // Gọi API terminate để ép kết thúc luồng
-    return client.workflowResource.terminate(workflowId, reason);
+    const wfResource = client.workflowResource;
+
+    try {
+      if (typeof wfResource.terminate1 === "function") {
+        return await wfResource.terminate1(workflowId, reason);
+      } else if (typeof wfResource.terminate === "function") {
+        return await wfResource.terminate(workflowId, reason);
+      }
+    } catch (error) {
+      console.warn(`Không thể terminate workflow ${workflowId}:`, error);
+    }
   }
 
   async getNextPendingTask() {
@@ -71,7 +78,6 @@ export class OrkesService {
   ) {
     const client = await this.clientPromise;
 
-    // Cập nhật task thông qua đối tượng request chuẩn
     return client.taskResource.updateTask1({
       taskId: taskId,
       workflowInstanceId: workflowInstanceId,
@@ -82,13 +88,11 @@ export class OrkesService {
 
   async getWorkflowDetails(workflowId: string) {
     const client = await this.clientPromise;
-    // Tham số 'true' để lấy luôn danh sách chi tiết các tasks bên trong
     return client.workflowResource.getExecutionStatus(workflowId, true);
   }
 
   async getWorkflowDef(name: string, version: number = 1) {
     const client = await this.clientPromise;
-    // API kéo bản vẽ gốc từ server
     return client.metadataResource.get(name, version);
   }
 }

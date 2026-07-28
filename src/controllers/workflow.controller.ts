@@ -1,43 +1,62 @@
 import { Request, Response } from "express";
+import fs from "fs";
+import path from "path";
 import { OrkesService } from "../services/orkes.service";
 
 const orkesService = new OrkesService();
+const WEBHOOK_LOG_FILE = path.join(process.cwd(), "webhook_notifications.json");
+
+// Helper đọc danh sách Webhook từ file JSON
+const getWebhookLogs = () => {
+  try {
+    if (fs.existsSync(WEBHOOK_LOG_FILE)) {
+      const data = fs.readFileSync(WEBHOOK_LOG_FILE, "utf-8");
+      return JSON.parse(data);
+    }
+  } catch (e) {
+    console.error("Lỗi đọc file webhook_notifications.json:", e);
+  }
+  return [];
+};
 
 export const getDashboard = async (req: Request, res: Response) => {
   try {
-    const wfName = "Performance_Review_Mock_Workflow"; // Tên workflow của bạn
+    const wfName = "Performance_Review_Mock_Workflow";
     const wfId = req.query.workflowId as string;
-    const message = req.query.message || "";
+    const message = (req.query.message as string) || "";
 
-    // 1. Luôn kéo bản vẽ gốc (Def) về
     const workflowDef: any = await orkesService.getWorkflowDef(wfName);
     let workflowExe: any = null;
     let pendingTask: any = null;
     let completedTasks: any[] = [];
 
-    // 2. Nếu đang xem 1 luồng cụ thể, kéo trạng thái thực tế về
     if (wfId) {
       workflowExe = await orkesService.getWorkflowDetails(wfId);
 
       // Tìm task đang chờ
-      pendingTask = workflowExe.tasks.find(
+      pendingTask = workflowExe.tasks?.find(
         (t: any) =>
           (t.status === "IN_PROGRESS" || t.status === "SCHEDULED") &&
           t.taskDefName === "mock_human_task",
       );
 
-      // Lọc các task đã xong và có comment để hiển thị lịch sử
-      completedTasks = workflowExe.tasks.filter(
-        (t: any) =>
-          t.status === "COMPLETED" && t.outputData && t.outputData.comments,
-      );
+      // Lọc các task đã xong và có outputData
+      completedTasks =
+        workflowExe.tasks?.filter(
+          (t: any) =>
+            t.status === "COMPLETED" && t.outputData && t.outputData.comments,
+        ) || [];
     }
+
+    // Đọc danh sách log Webhook từ file JSON
+    const webhookLogs = getWebhookLogs();
 
     res.render("dashboard", {
       workflowDef,
       workflowExe,
       pendingTask,
       completedTasks,
+      webhookLogs,
       message,
       wfId,
     });
@@ -46,7 +65,6 @@ export const getDashboard = async (req: Request, res: Response) => {
   }
 };
 
-// Hàm Start giữ nguyên logic cũ, chỉ đổi chỗ redirect
 export const startWorkflow = async (req: Request, res: Response) => {
   try {
     const wfName = "Performance_Review_Mock_Workflow";
@@ -63,8 +81,9 @@ export const startWorkflow = async (req: Request, res: Response) => {
     const webhookUrl = `${serverBaseUrl}/api/webhook/notify`;
 
     const newWfId = await orkesService.startWorkflow(webhookUrl);
-    // Xong thì redirect thẳng về dashboard kèm ID
-    res.redirect(`/?workflowId=${newWfId}&message=Khởi tạo thành công!`);
+    res.redirect(
+      `/?workflowId=${newWfId}&message=Khởi tạo luồng mới thành công!`,
+    );
   } catch (error: any) {
     res.redirect(`/?message=Lỗi Start: ${error.message}`);
   }
@@ -80,7 +99,7 @@ export const completeTask = async (req: Request, res: Response) => {
       completedAt: new Date().toISOString(),
     });
     res.redirect(
-      `/?workflowId=${workflowInstanceId}&message=Đã hoàn thành Task!`,
+      `/?workflowId=${workflowInstanceId}&message=Đã duyệt Task thành công!`,
     );
   } catch (error: any) {
     res.redirect(
@@ -90,5 +109,28 @@ export const completeTask = async (req: Request, res: Response) => {
 };
 
 export const handleWebhook = (req: Request, res: Response) => {
+  try {
+    const logs = getWebhookLogs();
+    const newLog = {
+      id: Date.now().toString(),
+      receivedAt: new Date().toISOString(),
+      payload: req.body,
+    };
+
+    logs.unshift(newLog);
+
+    console.log("🔔 [Webhook] Nhận thông báo từ Orkes:", { req, res, newLog });
+
+    fs.writeFileSync(
+      WEBHOOK_LOG_FILE,
+      JSON.stringify(logs.slice(0, 30), null, 2),
+      "utf-8",
+    );
+
+    console.log("🔔 [Webhook] Đã nhận thông báo từ Orkes & lưu vào file JSON!");
+  } catch (err) {
+    console.error("Lỗi khi ghi file Webhook JSON:", err);
+  }
+
   res.status(200).json({ success: true });
 };
