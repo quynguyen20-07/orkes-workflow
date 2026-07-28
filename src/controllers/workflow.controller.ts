@@ -22,7 +22,7 @@ const getWebhookLogs = () => {
 export const getDashboard = async (req: Request, res: Response) => {
   try {
     const wfName = "Performance_Review_Mock_Workflow";
-    const wfId = req.query.workflowId as string;
+    let wfId = req.query.workflowId as string;
     const message = (req.query.message as string) || "";
 
     const workflowDef: any = await orkesService.getWorkflowDef(wfName);
@@ -30,17 +30,23 @@ export const getDashboard = async (req: Request, res: Response) => {
     let pendingTask: any = null;
     let completedTasks: any[] = [];
 
+    // 🌟 PHẦN MỚI: Nếu không có workflowId trên URL, tự động tìm luồng đang chạy
+    if (!wfId) {
+      const runningWfs = await orkesService.getRunningWorkflows(wfName);
+      if (runningWfs && runningWfs.length > 0) {
+        wfId = runningWfs[0];  
+      }
+    }
+
     if (wfId) {
       workflowExe = await orkesService.getWorkflowDetails(wfId);
 
-      // Tìm task đang chờ
       pendingTask = workflowExe.tasks?.find(
         (t: any) =>
           (t.status === "IN_PROGRESS" || t.status === "SCHEDULED") &&
-          t.taskDefName === "mock_human_task",
+          (t.taskType === "SIMPLE" || t.type === "SIMPLE"),
       );
 
-      // Lọc các task đã xong và có outputData
       completedTasks =
         workflowExe.tasks?.filter(
           (t: any) =>
@@ -108,18 +114,50 @@ export const completeTask = async (req: Request, res: Response) => {
   }
 };
 
-export const handleWebhook = (req: Request, res: Response) => {
+export const handleWebhook = async (req: Request, res: Response) => {
   try {
+    let bodyData = req.body;
+    if (typeof bodyData === "string") {
+      try {
+        bodyData = JSON.parse(bodyData);
+      } catch (e) {
+        bodyData = { raw: req.body };
+      }
+    }
+
+    const { workflowId } = bodyData || {};
+    let orkesOutput = null;
+
+    if (workflowId) {
+      try {
+        const details: any = await orkesService.getWorkflowDetails(workflowId);
+        orkesOutput = {
+          workflowId: details.workflowId,
+          status: details.status,
+          workflowOutput: details.output || {},
+          executedTasks: details.tasks?.map((t: any) => ({
+            refName: t.referenceTaskName,
+            status: t.status,
+            outputData: t.outputData,
+          })),
+        };
+      } catch (e: any) {
+        console.warn(
+          `⚠️ Không thể lấy workflow details cho ID ${workflowId}:`,
+          e.message,
+        );
+      }
+    }
+
     const logs = getWebhookLogs();
     const newLog = {
       id: Date.now().toString(),
       receivedAt: new Date().toISOString(),
-      payload: req.body,
+      payload: bodyData || {},
+      orkesExecution: orkesOutput,
     };
 
     logs.unshift(newLog);
-
-    console.log("🔔 [Webhook] Nhận thông báo từ Orkes:", { req, res, newLog });
 
     fs.writeFileSync(
       WEBHOOK_LOG_FILE,
@@ -127,7 +165,9 @@ export const handleWebhook = (req: Request, res: Response) => {
       "utf-8",
     );
 
-    console.log("🔔 [Webhook] Đã nhận thông báo từ Orkes & lưu vào file JSON!");
+    console.log(
+      "🔔 [Webhook] Đã nhận thông báo & enriched dữ liệu từ Orkes Server!",
+    );
   } catch (err) {
     console.error("Lỗi khi ghi file Webhook JSON:", err);
   }

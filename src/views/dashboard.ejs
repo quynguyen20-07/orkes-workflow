@@ -47,15 +47,14 @@
                         Trạng thái: <span class="bg-blue-100 text-blue-700 font-mono px-2 py-0.5 rounded text-xs">
                             <%= wfId %>
                         </span>
-                        <% } else { %>
-                            Trạng thái: <span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs">Chưa khởi
-                                chạy</span>
-                            <% } %>
+                    <% } else { %>
+                        Trạng thái: <span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-xs">Chưa khởi chạy</span>
+                    <% } %>
                 </p>
             </div>
             <form action="/workflow/start" method="POST" class="m-0">
                 <button type="submit"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-full shadow-md transition-all transform hover:scale-105 flex items-center gap-2">
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-full shadow-md transition-all transform hover:scale-105 flex items-center gap-2 cursor-pointer">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z">
@@ -69,170 +68,238 @@
         </div>
 
         <% if (locals.message) { %>
-            <div
-                class="bg-teal-50 border border-teal-200 text-teal-800 px-4 py-3 rounded-xl mb-6 shadow-sm flex items-center gap-3">
-                <svg class="w-6 h-6 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="bg-teal-50 border border-teal-200 text-teal-800 px-4 py-3 rounded-xl mb-6 shadow-sm flex items-center gap-3">
+                <svg class="w-6 h-6 text-teal-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
-                <span><strong>Hệ thống:</strong>
-                    <%= message %>
-                </span>
+                <span><strong>Hệ thống:</strong> <%= message %></span>
             </div>
-            <% } %>
+        <% } %>
 
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-                    <!-- BÊN TRÁI: DYNAMIC MERMAID VISUALIZER -->
-                    <div
-                        class="col-span-12 lg:col-span-7 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <div class="bg-slate-50 h-full p-6 flex flex-col items-center justify-start overflow-y-auto"
-                            style="min-height: 750px;">
-                            <h2 class="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] mb-6">Live Execution
-                                Map (Sơ đồ hiện đại)</h2>
+            <!-- BÊN TRÁI: DYNAMIC MERMAID VISUALIZER -->
+            <div class="col-span-12 lg:col-span-7 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="bg-slate-50 h-full p-6 flex flex-col items-center justify-start overflow-y-auto"
+                    style="min-height: 750px;">
+                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] mb-6">Live Execution Map</h2>
 
-                            <% if (!locals.wfId) { %>
-                                <div class="mt-20 text-center text-slate-400">
-                                    <svg class="w-16 h-16 mx-auto mb-4 text-slate-300" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-                                        </path>
-                                    </svg>
-                                    <p>Hãy nhấn nút "Khởi chạy luồng mới" ở góc trên.</p>
-                                </div>
-                                <% } else { %>
-                                    <div class="mermaid w-full flex justify-center">
-                                        <div class="animate-pulse text-blue-400 font-bold">Đang dựng sơ đồ từ Orkes...</div>
-                                    </div>
-                                    <% } %>
+                    <% if (!locals.wfId) { %>
+                        <div class="mt-20 text-center text-slate-400">
+                            <svg class="w-16 h-16 mx-auto mb-4 text-slate-300" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                                </path>
+                            </svg>
+                            <p>Hãy nhấn nút "Khởi chạy luồng mới" ở góc trên.</p>
                         </div>
+                    <% } else { %>
+                        <div class="mermaid w-full flex justify-center">
+                            <div class="animate-pulse text-blue-400 font-bold">Đang dựng sơ đồ từ Orkes...</div>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- BÊN PHẢI: CONTROL PANEL & AUDIT LOGS -->
+            <div class="col-span-12 lg:col-span-5 flex flex-col gap-8">
+
+                <!-- 1. Khu vực Thao tác Form Duyệt -->
+                <div class="bg-white p-7 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-indigo-500"></div>
+                    <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                        <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4">
+                            </path>
+                        </svg>
+                        Khu vực Xử lý
+                    </h2>
+
+                    <% if (!locals.wfId) { %>
+                        <div class="text-center py-8 text-slate-400">
+                            <p>Chưa có luồng nào đang chạy.</p>
+                        </div>
+                    <% } else if (locals.pendingTask) { %>
+                        <div class="animate-fade-in">
+                            <div class="mb-5 bg-amber-50 border border-amber-200 p-4 rounded-xl text-amber-800 text-sm shadow-sm flex items-start gap-3">
+                                <svg class="w-5 h-5 text-amber-500 mt-0.5 shrink-0" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <div>
+                                    <span class="block text-xs uppercase tracking-wider text-amber-600/80 mb-0.5">Đang chờ thao tác</span>
+                                    <span class="font-bold text-amber-900"><%= pendingTask.referenceTaskName %></span>
+                                </div>
+                            </div>
+                            <form action="/task/complete" method="POST">
+                                <input type="hidden" name="taskId" value="<%= pendingTask.taskId %>">
+                                <input type="hidden" name="workflowInstanceId" value="<%= pendingTask.workflowInstanceId %>">
+                                <div class="mb-4">
+                                    <label class="block text-xs font-bold mb-2 text-slate-500 uppercase tracking-wide">Ý kiến đánh giá:</label>
+                                    <textarea name="comments" rows="3" required
+                                        class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all resize-none shadow-inner"
+                                        placeholder="Nhập comment..."></textarea>
+                                </div>
+                                <div class="mb-6">
+                                    <label class="block text-xs font-bold mb-2 text-slate-500 uppercase tracking-wide">Quyết định:</label>
+                                    <select name="decision"
+                                        class="w-full border border-slate-300 rounded-xl p-3 bg-white text-sm focus:border-blue-500 outline-none font-semibold cursor-pointer shadow-sm">
+                                        <option value="APPROVE" class="text-emerald-600">✅ Đồng ý (Approve)</option>
+                                        <option value="REJECT" class="text-rose-600">❌ Từ chối (Reject)</option>
+                                    </select>
+                                </div>
+                                <button type="submit"
+                                    class="w-full bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl hover:bg-slate-900 shadow-md transition-all cursor-pointer">
+                                    Xác nhận Hoàn thành Task
+                                </button>
+                            </form>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center py-6 text-slate-400">
+                            <svg class="w-12 h-12 mx-auto mb-2 text-emerald-400" fill="none"
+                                stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <p class="font-bold text-slate-600 text-base">Tất cả Task đã hoàn thành!</p>
+                            <button onclick="window.location.reload()"
+                                class="mt-4 text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium py-1.5 px-4 rounded-full transition-colors border border-slate-200 cursor-pointer">Tải lại trang</button>
+                        </div>
+                    <% } %>
+                </div>
+
+                <!-- 2. Khu vực Audit Log & Notification History (Mới) -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex-1 flex flex-col">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                        <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                            </svg>
+                            Nhật ký Webhook & Audit Trail
+                        </h2>
+                        <span class="text-xs bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-full font-semibold border border-indigo-100">
+                            <%= locals.webhookLogs ? webhookLogs.length : 0 %> logs
+                        </span>
                     </div>
 
-                    <!-- BÊN PHẢI: CONTROL PANEL & WEBHOOK LOGS -->
-                    <div class="col-span-12 lg:col-span-5 flex flex-col gap-8">
-
-                        <!-- 1. Khu vực Thao tác Form Duyệt -->
-                        <div
-                            class="bg-white p-7 rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
-                            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-indigo-500">
-                            </div>
-                            <h2 class="text-xl font-bold text-slate-800 mb-6 flex items-center gap-2">
-                                <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4">
-                                    </path>
+                    <div class="space-y-3 max-h-[380px] overflow-y-auto pr-1">
+                        <% if (!locals.webhookLogs || webhookLogs.length === 0) { %>
+                            <div class="text-center py-8 text-slate-400">
+                                <svg class="w-10 h-10 mx-auto mb-2 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
                                 </svg>
-                                Khu vực Xử lý
-                            </h2>
-
-                            <% if (!locals.wfId) { %>
-                                <div class="text-center py-8 text-slate-400">
-                                    <p>Chưa có luồng nào đang chạy.</p>
-                                </div>
-                                <% } else if (locals.pendingTask) { %>
-                                    <div class="animate-fade-in">
-                                        <div
-                                            class="mb-5 bg-amber-50 border border-amber-200 p-4 rounded-xl text-amber-800 text-sm shadow-sm flex items-start gap-3">
-                                            <svg class="w-5 h-5 text-amber-500 mt-0.5" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
-                                            <div>
-                                                <span
-                                                    class="block text-xs uppercase tracking-wider text-amber-600/80 mb-0.5">Đang
-                                                    chờ thao tác</span>
-                                                <span class="font-bold text-amber-900">
-                                                    <%= pendingTask.referenceTaskName %>
-                                                </span>
-                                            </div>
+                                <p class="text-xs italic">Chưa ghi nhận sự kiện Webhook nào.</p>
+                            </div>
+                        <% } else { %>
+                            <% webhookLogs.forEach((log, index) => { %>
+                                <% 
+                                    const payload = log.payload || {};
+                                    const exec = log.orkesExecution;
+                                    const status = payload.workflowStatus || (exec ? exec.status : 'RECEIVED');
+                                    const msg = payload.message || null;
+                                    const wfId = payload.workflowId || (exec ? exec.workflowId : null);
+                                    
+                                    // Gom tất cả Workflow Output từ exec hoặc payload
+                                    const rawOutput = exec?.workflowOutput || payload.workflowOutput || {};
+                                    const hasOutput = rawOutput && typeof rawOutput === 'object' && Object.keys(rawOutput).length > 0;
+                                    
+                                    const dateStr = log.receivedAt ? new Date(log.receivedAt).toLocaleTimeString('vi-VN') + ' - ' + new Date(log.receivedAt).toLocaleDateString('vi-VN') : 'N/A';
+                                %>
+                                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 hover:border-slate-300 transition-all">
+                                    
+                                    <!-- Header Event -->
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div class="flex items-center gap-2">
+                                            <span class="relative flex h-2 w-2">
+                                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                            </span>
+                                            <span class="text-xs font-bold text-slate-700">Audit Log #<%= webhookLogs.length - index %></span>
                                         </div>
-                                        <form action="/task/complete" method="POST">
-                                            <input type="hidden" name="taskId" value="<%= pendingTask.taskId %>">
-                                            <input type="hidden" name="workflowInstanceId"
-                                                value="<%= pendingTask.workflowInstanceId %>">
-                                            <div class="mb-4">
-                                                <label
-                                                    class="block text-xs font-bold mb-2 text-slate-500 uppercase tracking-wide">Ý
-                                                    kiến đánh giá:</label>
-                                                <textarea name="comments" rows="3" required
-                                                    class="w-full border border-slate-300 rounded-xl p-3 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all resize-none shadow-inner"
-                                                    placeholder="Nhập comment..."></textarea>
-                                            </div>
-                                            <div class="mb-6">
-                                                <label
-                                                    class="block text-xs font-bold mb-2 text-slate-500 uppercase tracking-wide">Quyết
-                                                    định:</label>
-                                                <select name="decision"
-                                                    class="w-full border border-slate-300 rounded-xl p-3 bg-white text-sm focus:border-blue-500 outline-none font-semibold cursor-pointer shadow-sm">
-                                                    <option value="APPROVE" class="text-emerald-600">✅ Đồng ý (Approve)
-                                                    </option>
-                                                    <option value="REJECT" class="text-rose-600">❌ Từ chối (Reject)
-                                                    </option>
-                                                </select>
-                                            </div>
-                                            <button type="submit"
-                                                class="w-full bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl hover:bg-slate-900 shadow-md transition-all">
-                                                Xác nhận Hoàn thành Task
-                                            </button>
-                                        </form>
+                                        <span class="text-[10px] text-slate-400 font-mono"><%= dateStr %></span>
                                     </div>
-                                    <% } else { %>
-                                        <div class="text-center py-6 text-slate-400">
-                                            <svg class="w-12 h-12 mx-auto mb-2 text-emerald-400" fill="none"
-                                                stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+
+                                    <!-- Message Box -->
+                                    <% if (msg) { %>
+                                        <div class="text-xs font-semibold text-slate-800 bg-white border border-slate-200 rounded-lg p-2.5 mb-2.5 flex items-start gap-2 shadow-2xs">
+                                            <svg class="w-4 h-4 text-blue-500 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                             </svg>
-                                            <p class="font-bold text-slate-600 text-base">Tất cả Task đã hoàn thành!</p>
-                                            <button onclick="window.location.reload()"
-                                                class="mt-4 text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium py-1.5 px-4 rounded-full transition-colors border border-slate-200">Tải
-                                                lại trang</button>
+                                            <span><%= msg %></span>
                                         </div>
+                                    <% } %>
+
+                                    <!-- Badges Section -->
+                                    <div class="flex flex-wrap gap-1.5 mb-2 text-[10px] font-mono">
+                                        <% if (wfId) { %>
+                                            <span class="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-md font-medium">
+                                                ID: <%= wfId.substring(0, 8) %>...
+                                            </span>
                                         <% } %>
-                        </div>
 
-                        <!-- 2. Khu vực Lịch sử Webhook -->
-                        <div class="bg-white p-7 rounded-2xl border border-slate-200 shadow-sm flex-1">
-                            <h2 class="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
-                                <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor"
-                                    viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
-                                    </path>
-                                </svg>
-                                Nhật ký Webhook Notifications
-                                <span class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-mono">
-                                    <%= locals.webhookLogs ? webhookLogs.length : 0 %> logs
-                                </span>
-                            </h2>
-                            <div class="space-y-3 max-h-[250px] overflow-y-auto pr-2">
-                                <% if (!locals.webhookLogs || webhookLogs.length===0) { %>
-                                    <p class="text-xs text-slate-400 italic text-center py-4">Chưa có thông báo Webhook
-                                        nào gửi đến.</p>
-                                    <% } else { %>
-                                        <% webhookLogs.forEach(log=> { %>
-                                            <div
-                                                class="bg-slate-900 text-slate-100 p-3 rounded-xl text-xs font-mono shadow-inner">
-                                                <div
-                                                    class="flex justify-between text-slate-400 mb-1 border-b border-slate-800 pb-1">
-                                                    <span>🔔 Webhook Trigger</span>
-                                                    <span>
-                                                        <%= new Date(log.receivedAt).toLocaleTimeString('vi-VN') %>
-                                                    </span>
-                                                </div>
-                                                <pre
-                                                    class="text-[11px] text-green-400 overflow-x-auto"><%= JSON.stringify(log.payload, null, 2) %></pre>
+                                        <span class="px-2 py-0.5 rounded-md border font-semibold uppercase
+                                            <%= status === 'RUNNING' ? 'bg-amber-50 text-amber-700 border-amber-200' : '' %>
+                                            <%= status === 'COMPLETED' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : '' %>
+                                            <%= status === 'FAILED' ? 'bg-rose-50 text-rose-700 border-rose-200' : '' %>
+                                            <%= (status !== 'RUNNING' && status !== 'COMPLETED' && status !== 'FAILED') ? 'bg-slate-100 text-slate-600 border-slate-200' : '' %>">
+                                            Status: <%= status %>
+                                        </span>
+
+                                        <% if (exec) { %>
+                                            <span class="bg-purple-50 text-purple-700 border border-purple-200 px-2 py-0.5 rounded-md font-sans">
+                                                ⚡ Orkes Sync
+                                            </span>
+                                        <% } %>
+                                    </div>
+
+                                    <!-- Workflow Output Dynamic Mapping (Record<string, unknown>) -->
+                                    <% if (hasOutput) { %>
+                                        <div class="mt-2 bg-white rounded-lg p-2 border border-slate-200 text-[11px]">
+                                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Workflow Output:</span>
+                                            <div class="grid grid-cols-1 gap-1">
+                                                <% Object.entries(rawOutput).forEach(([key, val]) => { %>
+                                                    <div class="flex items-center justify-between bg-slate-50 px-2 py-1 rounded border border-slate-100 font-mono">
+                                                        <span class="text-slate-500 font-medium"><%= key %>:</span>
+                                                        <span class="text-slate-800 font-bold"><%= typeof val === 'object' ? JSON.stringify(val) : val %></span>
+                                                    </div>
+                                                <% }) %>
                                             </div>
-                                            <% }) %>
-                                                <% } %>
-                            </div>
-                        </div>
+                                        </div>
+                                    <% } %>
 
+                                    <!-- Executed Tasks (If Orkes Execution exists) -->
+                                    <% if (exec && exec.executedTasks && exec.executedTasks.length > 0) { %>
+                                        <div class="mt-2">
+                                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Executed Tasks (<%= exec.executedTasks.length %>):</span>
+                                            <div class="flex flex-wrap gap-1">
+                                                <% exec.executedTasks.forEach(t => { %>
+                                                    <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-700 flex items-center gap-1.5">
+                                                        <span class="w-1.5 h-1.5 rounded-full <%= t.status === 'COMPLETED' ? 'bg-emerald-500' : 'bg-amber-500' %>"></span>
+                                                        <%= t.refName %>
+                                                    </span>
+                                                <% }) %>
+                                            </div>
+                                        </div>
+                                    <% } %>
+
+                                    <!-- Collapsible Raw Payload JSON -->
+                                    <details class="mt-2 text-[10px] text-slate-400">
+                                        <summary class="cursor-pointer hover:text-slate-600 font-mono select-none">Xem Payload Gốc (Raw JSON)</summary>
+                                        <pre class="mt-1 bg-slate-900 text-green-400 p-2.5 rounded-lg font-mono overflow-x-auto text-[10px] leading-tight"><%= JSON.stringify(log, null, 2) %></pre>
+                                    </details>
+
+                                </div>
+                            <% }) %>
+                        <% } %>
                     </div>
                 </div>
+
+            </div>
+        </div>
     </div>
 
     <!-- Data Injection -->
@@ -261,7 +328,7 @@
                 .replace(/[\r\n]+/g, ' ');
         }
 
-        // SVG MICRO ICONS (Sạch sẽ, hiện đại)
+        // SVG MICRO ICONS
         const iconGlobe = `<svg style='width:13px;height:13px;display:inline-block;vertical-align:-2px;margin-right:5px;color:#2563eb;' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 12a9 9 0 11-18 0 9 9 0 0118 0z'/><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M3.6 9h16.8M3.6 15h16.8'/><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M11.5 3a17 17 0 000 18M12.5 3a17 17 0 010 18'/></svg>`;
         const iconUser = `<svg style='width:13px;height:13px;display:inline-block;vertical-align:-2px;margin-right:5px;color:#4f46e5;' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'/></svg>`;
         const iconFork = `<svg style='width:13px;height:13px;display:inline-block;vertical-align:-2px;margin-right:5px;color:#94a3b8;' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4'/></svg>`;
@@ -272,7 +339,6 @@
         function generateMermaidGraph() {
             if (!wfDef || !wfDef.tasks) return null;
 
-            // Đặt rx/ry nhẹ 5px tạo viền vuông bo nhẹ cá tính, bỏ dáng viên thuốc tròn bầu
             let m = `graph TD
             classDef completed fill:#ffffff,stroke:#10b981,stroke-width:1.5px,color:#0f172a,rx:6px,ry:6px;
             classDef inprogress fill:#ffffff,stroke:#3b82f6,stroke-width:2px,color:#0f172a,stroke-dasharray: 4 4,rx:6px,ry:6px;
@@ -321,16 +387,15 @@
                         let typeIcon = task.type === 'HTTP' ? iconGlobe : iconUser;
                         let safeRefName = cleanString(task.taskReferenceName);
 
-                        // Card thiết kế chuẩn Flex, có padding thoáng đãng, co giãn tự do
                         let cardHtml = `<div style='padding:10px 14px;text-align:left;min-width:210px;max-width:280px;'>`;
                         
-                        // Header
+                        // Header Card
                         cardHtml += `<div style='font-weight:700;font-size:12px;color:#0f172a;display:flex;align-items:center;justify-content:space-between;gap:8px;'>`;
                         cardHtml += `<span style='overflow:hidden;text-overflow:ellipsis;white-space:nowrap;'>${typeIcon}${safeRefName}</span>`;
                         cardHtml += `<span style='font-size:9px;padding:2px 6px;background:#f1f5f9;color:#64748b;border-radius:4px;font-weight:600;flex-shrink:0;'>${task.type}</span>`;
                         cardHtml += `</div>`;
 
-                        // Body thông tin hoàn thành
+                        // Body thông tin Task
                         if (status === 'completed' && exeTask?.outputData) {
                             const out = exeTask.outputData;
                             const by = cleanString(out.processedBy || 'System');
@@ -359,7 +424,6 @@
 
                         cardHtml += `</div>`;
 
-                        // Dùng shape vuông ["..."] thay cho dáng trứng tròn bầu
                         m += `${tId}["${cardHtml}"]:::${status}\n`;
                         currentParents.forEach(p => m += `${p} --> ${tId}\n`);
                         currentParents = [tId];
